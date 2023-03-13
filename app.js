@@ -10,7 +10,10 @@ app.use(express.static("public"));
 
 // mongoDB uri:
 const uri = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.osw5jzt.mongodb.net/ToDoListDB?retryWrites=true&w=majority`;
-mongoose.connect(uri, { useNewURLParser: true, useUnifiedTopology: true });
+mongoose.connect(uri, { useNewURLParser: true, useUnifiedTopology: true }).then(
+  app.listen(process.env.PORT || 3000, function () {
+  console.log("Server started on port 3000");
+}));
 
 const itemSchema = mongoose.Schema({ name: String });
 const Item = mongoose.model("Item", itemSchema);
@@ -128,6 +131,3 @@ app.get("/about", function (req, res) {
     res.render("about");
 });
 
-app.listen(process.env.PORT || 3000, function () {
-    console.log("Server started on port 3000");
-});
