@@ -4,19 +4,29 @@ const mongoose = require("mongoose");
 const _ = require("lodash");
 
 const app = express();
+mpngoose.set('strictQuery', false);
 app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 
 // mongoDB uri:
 const uri = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.osw5jzt.mongodb.net/ToDoListDB?retryWrites=true&w=majority`;
-mongoose.connect(uri, { useNewURLParser: true, useUnifiedTopology: true })
-mongoose.connection.on('connected', function () {  
-  console.log("mongoose connected");
-  app.listen(process.env.PORT || 3000, function () {
-    console.log("Server started!!");
-  })
-}); 
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(uri, { useNewURLParser: true, useUnifiedTopology: true });
+    console.log(`MongoDB connected: ${conn.connection.host}`)
+  } catch (err) {
+    console.log(err);
+    process.exit(1);
+  }
+}
+
+// mongoose.connection.on('connected', function () {  
+//   console.log("mongoose connected");
+//   app.listen(process.env.PORT || 3000, function () {
+//     console.log("Server started!!");
+//   })
+// }); 
 
 const itemSchema = mongoose.Schema({ name: String });
 const Item = mongoose.model("Item", itemSchema);
@@ -27,6 +37,10 @@ const defaultItems = [item1, item2, item3];
 
 const listSchema = mongoose.Schema({ name: String, items: [itemSchema] });
 const List = mongoose.model("List", listSchema);
+
+app.get("/about", function (req, res) {
+  res.render("about");
+});
 
 app.get("/", function (req, res) {
     const day = date.getDate();
@@ -130,7 +144,8 @@ app.post("/delete", function (req, res) {
     }
 });
 
-app.get("/about", function (req, res) {
-    res.render("about");
-});
-
+connectDB().then(() => {
+  app.listen(process.env.PORT || 3000, function () {
+        console.log("Server started!!");
+      })
+})
