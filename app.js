@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const _ = require("lodash");
 
 const app = express();
-mpngoose.set('strictQuery', false);
+mongoose.set("strictQuery", false);
 app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.use(express.static("public"));
@@ -12,21 +12,24 @@ app.use(express.static("public"));
 // mongoDB uri:
 const uri = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.osw5jzt.mongodb.net/ToDoListDB?retryWrites=true&w=majority`;
 const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(uri, { useNewURLParser: true, useUnifiedTopology: true });
-    console.log(`MongoDB connected: ${conn.connection.host}`)
-  } catch (err) {
-    console.log(err);
-    process.exit(1);
-  }
-}
+    try {
+        const conn = await mongoose.connect(uri, {
+            useNewURLParser: true,
+            useUnifiedTopology: true,
+        });
+        console.log(`MongoDB connected: ${conn.connection.host}`);
+    } catch (err) {
+        console.log(err);
+        process.exit(1);
+    }
+};
 
-// mongoose.connection.on('connected', function () {  
+// mongoose.connection.on('connected', function () {
 //   console.log("mongoose connected");
 //   app.listen(process.env.PORT || 3000, function () {
 //     console.log("Server started!!");
 //   })
-// }); 
+// });
 
 const itemSchema = mongoose.Schema({ name: String });
 const Item = mongoose.model("Item", itemSchema);
@@ -39,7 +42,7 @@ const listSchema = mongoose.Schema({ name: String, items: [itemSchema] });
 const List = mongoose.model("List", listSchema);
 
 app.get("/about", function (req, res) {
-  res.render("about");
+    res.render("about");
 });
 
 app.get("/", function (req, res) {
@@ -145,7 +148,7 @@ app.post("/delete", function (req, res) {
 });
 
 connectDB().then(() => {
-  app.listen(process.env.PORT || 3000, function () {
+    app.listen(process.env.PORT || 3000, function () {
         console.log("Server started!!");
-      })
-})
+    });
+});
